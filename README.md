@@ -2,7 +2,7 @@
 
 The following repository holds any projects or assignments from my coursework at USYD which I think are worthy of sharing with future students. 
 
-Degree: Bachelor of Software Engineering/Bachelor of Science (Mathematical Sciences) (Data Science)
+Degree: Bachelor of Software Engineering/Bachelor of Science (Data Science)
 
 ## Progression
 I am leaving my degree progression here as to hopefully help a future student out. Please note that I originally started out doing a Bachelor of Aeronautical Engineering and Bachelor of Science (Physics) before changing to my current degree.
