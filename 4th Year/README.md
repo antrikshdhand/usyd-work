@@ -1,11 +1,14 @@
 # USYD 4th Year
 
-There are no files in this folder besides this README!
+The following directory contains files related to the following units I completed in fourth year:
 
-## Semester 1
+<pre>
+4th Year
+└── Semester 1
+    ├── <b>COMP3608: Introduction to Artificial Intelligence (Advanced)</b> 
+    └── <b>SCDL3991: Science Dalyell Individual Research Project</b> 
+└── Semester 2
+    └── <b>ELEC4714: Major Industrial Project [ESIPS]</b>
+</pre>
 
-Most work this semester was group work, and hence I cannot share those assignments or project work here. The only unit which was had an individual project was [SCDL3991](https://github.com/antrikshdhand/SCDL3991-research).
-
-## Semester 2
-
-I am completing the ESIPS program which replaces my semester with a full-time industry placement.
+Note that in Semester 2 I was admitted into the ESIPS program which replaces the 12 credit points of thesis units (Thesis A and Thesis B) with 24 credit points of a full-time industry placement. 

@@ -7,7 +7,7 @@ Degree: Bachelor of Software Engineering/Bachelor of Science (Mathematical Scien
 ## Progression
 I am leaving my degree progression here as to hopefully help a future student out. Please note that I originally started out doing a Bachelor of Aeronautical Engineering and Bachelor of Science (Physics) before changing to my current degree.
 
-A subject in **bold** means I have some coursework uploaded to this repository from that unit.
+A subject in **bold** means I have some coursework from that unit uploaded or linked in this repository.
 
 <pre>
 1st Year
@@ -53,12 +53,24 @@ A subject in **bold** means I have some coursework uploaded to this repository f
 
 4th Year
 └── Semester 1
-    ├── COMP3608: Introduction to Artifical Intelligence (Advanced)
+    ├── <b>COMP3608: Introduction to Artifical Intelligence (Advanced)</b>
     ├── ELEC5618: Software Quality Engineering
     ├── ENGD3004: Innovations for Global Peace and Education
     ├── OLET1311: Managing Your Project
-    ├── SCDL3991: Science Dalyell Individual Research Project
+    ├── <b>SCDL3991: Science Dalyell Individual Research Project</b>
     └── SOFT3202: Software Construction and Design 2
 └── Semester 2
-    └── ELEC4714: Major Industrial Project [ESIPS]
+    └── <b>ELEC4714: Major Industrial Project [ESIPS]</b>
+
+5th Year
+└── Semester 1
+    ├── COMP4347: Web Application Development
+    └── <b>DATA3888: Data Science Capstone</b>
+└── Semester 2
+    ├── <b>DATA2002: Data Analytics: Learning from Data</b>
+    ├── <b>ELEC3609: Internet Software Platforms</b>
+    ├── <b>ELEC5619: Object Oriented Application Frameworks</b>
+    ├── <b>INFO3616: Principles of Security and Security Eng</b>
+    └── <b>SOFT3888: Software Development Project</b>
+
 </pre>
