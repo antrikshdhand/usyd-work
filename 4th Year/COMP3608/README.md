@@ -8,4 +8,5 @@ Assignment 1: Program the Connect 4 game using the minimax search algorithm, wit
 
 Assignment 2: Implement Naive Bayes and Decision Tree classifiers from scratch and run 10-fold cross-validation using them. Scored 12/12 for code and 10.5/12 for the report.
 
+I have also uploaded my own exam cheatsheet for this unit as well as some sample exam questions. Good luck!
 
