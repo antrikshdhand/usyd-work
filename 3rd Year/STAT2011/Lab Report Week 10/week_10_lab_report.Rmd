@@ -1,0 +1,74 @@
+---
+title: "Week 10 Lab Report"
+author: "Antriksh Dhand"
+output: pdf_document
+date: "2023-05-04"
+documentclass: article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 3
+
+We throw a fair die $n$ times and study the distribution of the mean of these $n$ throws. Set $n=2$ in this question.
+
+## Part a)
+
+Use the function $\texttt{sample()}$ to simulate $n$ throws. Repeat this $r = 10000$ times, compute the mean of each repetition, and store the results in $\texttt{sm}$.
+
+```{r}
+set.seed(0503)
+
+r <- 10000
+n <- 2
+sm <- rep(0, r)
+for (i in 1:r)
+{
+    x <- sample(1:6, n, replace=TRUE)
+    sm[i] <- mean(x)
+}
+
+head(sm)
+```
+
+## Part b)
+
+Plot the distribution of $\texttt{sm}$ and comment on the shape of the distribution. Does the CLT apply here?
+
+```{r}
+plot(table(sm)/r, 
+     xlab="values", 
+     ylab="density", 
+     main="Distribution of the mean")
+```
+
+This is not a bell-shaped distribution. In fact the distribution is triangular. The sample size of `n = 2` is much too small for CLT to apply.
+
+## Part c)
+
+Repeat the above procedure for $n = 4, 8, 16, 32$ and comment on how the shape of the distribution changes, relating to the CLT.
+
+```{r}
+r <- 10000
+n <- c(2, 4, 8, 16, 32, 64)
+sm <- rep(0, r)
+
+par(mfrow=c(3, 2))
+
+for (j in n)
+{
+    for (i in 1:r)
+    {
+        x <- sample(1:6, j, replace=TRUE)
+        sm[i] <- mean(x)
+    }
+    plot(table(sm)/r, 
+         xlab="values", 
+         ylab="density", 
+         main=paste("n = ", j))
+}
+```
+
+As the number of coin tosses increases (i.e. an increased number of observations in each repetition), the distribution becomes more and more symmetrical and bell-shaped, resembling a normal curve by the time $n = 16$. This is in line with what the CLT states, which is that as the sample size gets larger, the distribution of sample means $\texttt{sm}$ approximates a normal distribution, regardless of the population's distribution.

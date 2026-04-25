@@ -43,7 +43,7 @@ A subject in **bold** means I have some coursework from that unit uploaded or li
     ├── <b>COMP2017: Systems Programming</b>
     ├── <b>COMP2123: Data Structures and Algorithms</b>
     ├── ISYS2110: Analysis and Design of Web Info Systems
-    └── STAT2011: Probability and Estimation Theory
+    └── <b>STAT2011: Probability and Estimation Theory</b>
 └── Semester 2 (NUS Semester Exchange)
     ├── CS2104: Programming Language Concepts [COMP3109]
     ├── CS2113: Software Engineering & OOP [SOFT2201]

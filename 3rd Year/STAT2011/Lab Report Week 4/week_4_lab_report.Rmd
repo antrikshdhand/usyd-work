@@ -1,0 +1,79 @@
+---
+title: "Lab Report Week 4"
+author: "Antriksh Dhand"
+date: "2023-03-19"
+output: pdf_document
+documentclass: article
+geometry: margin=2.5cm
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 7
+
+We now turn our attention to the case $n = 10$. In this case there are $6^{10} > 60$ million different possible outcomes, and so constructing an exhaustive matrix of outcomes is a daunting exercise. However we can use *Monte Carlo methods*: we can simulate a large number $y_1, \ldots, y_B$ of realisations of this random variable $Y$, and then for any function $g(\cdot)$ we can *approximate* $E[g(Y)]$ simply by determining the long-run average $\frac{1}{B} \sum_{j=1}^{B} g(y_j)$. Set `n=10`, `B=10,000` and `popn=1:6`. Define a vector of `n*B` simulated random draws with replacement from `popn` using
+
+$$
+\mathtt{draws = sample(size=b*B, x=popn, replace=TRUE)}
+$$
+
+and form the vector `draws` into a `B`-by-`n` matrix called `samples`. Each row then represents a sample of size `n` with replacement from `popn`.
+
+```{r}
+# Q7
+set.seed(123123123)
+
+n <- 10
+B <- 10000
+popn <- 1:6
+draws <- sample(size=n*B, x=popn, replace=TRUE)
+samples <- matrix(draws, nrow=B, ncol=n)
+samples[1:14, ]
+```
+
+# Question 8
+
+Obtain a vector `sim.sums` of (simulated) sample sums. Use this to compute *Monte Carlo approximations* to
+
+a) $\mu_Y = E(Y)$
+b) $\sigma_Y^2 = E(Y^2) - [E(Y)]^2$ and
+c) $P(Y \geq 45)$
+
+Compare the approximations, using the `R` functions `mean` and `var` to calculate the mean (sample expectation) and sample variance, respectively, to the theoretical values computed earlier and comment.
+
+```{r}
+# Q8
+sim.sums <- apply(samples, 1, sum)
+
+## a)
+sim.EY <- mean(sim.sums)
+
+## b)
+sim.var_Y <- var(sim.sums)
+
+## c)
+sim.prob <- mean(sim.sums > 45)
+```
+
+Theoretical mean: 
+$$
+E(Y) = nE(X) = 10 \times 3.5 = 35
+$$
+
+Experimental mean = `r round(sim.EY, 2)`
+
+Theoretical sample variance: 
+$$
+\begin{aligned}
+\textrm{Var}(Y) &= n \cdot \textrm{Var}(X) \\ 
+&= n \cdot \left( \sum_{x \in X} x^2P(x)  - E(X)^2 \right) \\
+&= 10 \cdot \left( \frac{91}{6} - 3.5^2 \right) \\
+&\approx 29.2 
+\end{aligned}
+$$
+
+Experimental sample variance $=$ `r round(sim.var_Y, 2)`
+
+By the theory imparted by Richard Von Mises, the experimental value of an experiment will tend towards the theoretical value as the number of trials increases. Here in our experiment we have taken a very large number of trials (10000), and hence, as can be seen above, the theoretical and experimental values are extremely close together. If we repeat the experiment with even more trials, the error between theory and experiment will diminish to (theoretically) 0 at an infinite number of trials.

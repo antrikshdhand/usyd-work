@@ -1,0 +1,307 @@
+---
+title: "STAT2011 Assignment"
+author: "Antriksh Dhand"
+date: "2023-05-21"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+# Question 1
+
+In a gambling game, a player wins the game if they roll 10 fair, six-sided dice, and get a sum of at least 40.
+
+## Part (a)
+
+Approximate the probability of winning by simulating the game $10^4$ times. Use \texttt{set.seed(200)} for this question. Output your approximate probability, but \textit{do not} print your simulated rolls.
+
+\textbf{Answer:}
+
+```{r}
+set.seed(200)
+
+num_sims <- 10^4
+
+# Setting up the simulation of 1 game
+one_game <- function() 
+{
+    rolls <- replicate(10, sample(c(1:6), 1))
+    win <- if (sum(rolls) >= 40) 1 else 0
+    return(win)
+}
+
+# Repeating the game 10^4 times and storing results
+results <- rep(0, num_sims) # create an empty array
+for (i in 1:num_sims)
+{
+    results[i] <- one_game()
+}
+
+monte_carlo <- sum(results)/length(results)
+cat("Monte Carlo probability is:", monte_carlo)
+```
+
+
+## Part (b)
+
+Compute the Central Limit Theorem approximation $P(Y \geq 40)$ where $Y$ is the sum of 10 dice, and compare it to the Monte Carlo approximation obtained above. You can use the fact that $\text{E}(Y) = 35$, $\text{Var}(Y) = 175/6$.
+
+\textbf{Answer:}
+
+We are asked to compute the CLT approximation for the probability that the sum of 10 dice will be greater than or equal to 40. 
+
+From the lectures, the Central Limit Theorem states that \textit{the sum of a number of independent and identically distributed (i.i.d.) random variables with finite non-zero variances will tend to a normal distribution as the number of variables grows.} Here, there are 10 i.i.d. RVs in the form of rolling 10 dice, and we are interested in the sum of these rolls which by the CLT would be approximated by a normal distribution.
+
+```{r}
+clt <- pnorm(q = 40, mean = 35, sd = sqrt(175/6), lower.tail = FALSE)
+cat("CLT approximation is", clt)
+```
+
+```{r, echo=FALSE}
+col_1 <- c("Monte Carlo Approximation", "CLT Approximation")
+col_2 <- c(monte_carlo, clt)
+
+df <- data.frame(col_1, col_2)
+names(df) <- c("Approximation method", "Probability of obtaining sum >= 40")
+kable(df)
+```
+
+Both methods returned a probability in the range of 17.5% to 20%. The variation here could be in the fact that the conditions for CLT to apply haven't been fully met: we are only looking for the sum of 10 iid RVs. As a rule of thumb, CLT usually applies if the sample is greater than or equal to 30. Hence, perhaps the Monte Carlo approximation is more ideal in this case.
+
+# Question 2
+
+The frequence table below summarises 320 counts modelled as values taken by i.i.d. random variables with common $\text{Bin}(4, p)$ distribution, i.e.
+
+$$P(X = x) = \binom{4}{x} p^x (1-p)^{4-x},\, \text{for } x=0,1,2,3,4$$
+for some unknown $p$.
+
+```{r, echo=FALSE}
+value <- c(0, 1, 2, 3, 4)
+freq <- c(130, 133, 49, 7, 1)
+df <- data.frame(value, freq)
+colnames(df) <- c("Value", "Frequency")
+kable(df)
+```
+
+
+## Part (a)
+
+Recall $\text{E}(X) = np$, estimate $p$ using the method of moments.
+
+\textbf{Answer:}
+
+We know that the population mean of the distribution is given by
+
+$$E(X) = np = 4p$$
+Now we calculate the sample mean and sample variance using the counts provided.
+
+```{r}
+counts <- 320
+obs_freq_0 <- 130
+obs_freq_1 <- 133
+obs_freq_2 <- 49
+obs_freq_3 <- 7
+obs_freq_4 <- 1
+
+x_bar <- ((0*obs_freq_0) + (1*obs_freq_1) + 
+                    (2*obs_freq_2) + (3*obs_freq_3) + (4*obs_freq_4))/counts
+
+cat("The sample mean is", x_bar)
+```
+
+Now,
+$$\bar{x} = np \implies p = \frac{\bar{x}}{n} = \frac{0.8}{4} = 0.2$$
+
+So, the estimated value of $p$ is 0.2.
+
+## Part (b)
+
+Using (a), find expected frequencies (E) for each of the classes "0", "1", "2", "3" and "4". Round to the nearest integer.
+
+\textbf{Answer:}
+
+The expected frequencies for each class is simply the estimated probability of success multiplied by the sample size. The estimated probability of success can be calculated using $\texttt{dbinom}$ setting $n = {0, 1, 2, 3, 4}$ and $p = 0.2$.
+
+```{r}
+exp_freq_0 <- round(dbinom(0, 4, 0.2) * counts)
+exp_freq_1 <- round(dbinom(1, 4, 0.2) * counts)
+exp_freq_2 <- round(dbinom(2, 4, 0.2) * counts)
+exp_freq_3 <- round(dbinom(3, 4, 0.2) * counts)
+exp_freq_4 <- round(dbinom(4, 4, 0.2) * counts)
+```
+
+```{r, echo=FALSE}
+classes <- c(0, 1, 2, 3, 4)
+exp_frequencies <- c(exp_freq_0, exp_freq_1, exp_freq_2, exp_freq_3, exp_freq_4)
+df <- data.frame(classes, exp_frequencies)
+colnames(df) <- c("Class", "Estimated Frequencies")
+kable(df)
+```
+
+
+
+## Part (c)
+
+Compute standardised residuals (SR) given by $SR = \frac{O-E}{\sqrt{E}}$ for each of the classes "0", "1", "2", "3" and "4", where $O$ represents the observed frequencies. If $|SR| < 2$, then the fitted binomial model is said to be a good model for the data. Comment on the goodness of fit.
+
+```{r}
+sr_0 <- (obs_freq_0 - exp_freq_0) / sqrt(exp_freq_0)
+sr_1 <- (obs_freq_1 - exp_freq_1) / sqrt(exp_freq_1)
+sr_2 <- (obs_freq_2 - exp_freq_2) / sqrt(exp_freq_2)
+sr_3 <- (obs_freq_3 - exp_freq_3) / sqrt(exp_freq_3)
+sr_4 <- (obs_freq_4 - exp_freq_4) / sqrt(exp_freq_4)
+```
+
+```{r, echo=FALSE}
+standardised_residuals <- c(sr_0, sr_1, sr_2, sr_3, sr_4)
+df <- data.frame(classes, standardised_residuals)
+colnames(df) <- c("Class", "Standardised Residuals")
+kable(df)
+```
+
+
+For each class, $|SR| < 2$, and so it can be said that the fitted binomial model is a good model for the data.
+
+# Question 3
+
+Use \texttt{set.seed(100)} to answer this question.
+
+## Part (a)
+
+Generate a random sample of size 25 from a normal distribution with mean $\mu = 3$ and standard deviation $\sigma = 1.5$. Assume $\sigma$ is known and we want to estimate $\mu$. Using the sample generated, find a 95% confidence interval (CI) for $\mu$.
+
+\textbf{Answer:}
+
+Confidence intervals can be calculated using:
+
+$$CI = \bar{x} \pm z \frac{s}{\sqrt{n}}$$
+
+where $\bar{x}$ is the sample mean, $z$ is the confidence level, $s$ is the sample standard deviation, and $n$ is the sample size. However, as we are assuming we know the population standard deviation, we will use $\sigma$ instead of $s$.
+
+```{r}
+set.seed(100)
+true_mean <- 3
+true_sd <- 1.5
+num_samples <- 25
+
+sample <- rnorm(num_samples, true_mean, true_sd)
+x_bar <- mean(sample)
+z <- qnorm(0.975)
+n <- num_samples
+error <- z * true_sd/sqrt(n)
+
+lower <- x_bar - error
+upper <- x_bar + error
+CI <- c(lower, upper)
+
+cat("Lower:", lower, "Upper:", upper)
+```
+
+Hence the 95% confidence interval for $\mu$ is $[2.57, 3.75]$. That is, there is a 95% chance that the true value of $\mu$ lies between 2.57 and 3.75.
+
+## Part (b)
+
+Repeat the process in (a) 20 times. Using your 20 samples, calculate 20 CIs for $\mu$. How many of these 20 intervals contain the true mean $\mu = 3$? Output this number from your code, but no need to print the 20 CIs themselves.
+
+\textbf{Answer:}
+
+```{r}
+set.seed(100)
+
+# Create a function to undertake the procedure in part (a)
+one_CI <- function(reps, mean, sd)
+{
+    sample <- rnorm(reps, mean, sd)
+    
+    x_bar <- mean(sample)
+    z <- qnorm(0.975)
+    n <- reps
+    error <- z * sd/sqrt(n)
+    
+    lower <- x_bar - error
+    upper <- x_bar + error
+    CI <- c(lower, upper)
+    
+    return(CI)
+}
+
+# Calculate 20 CIs for mu
+all_CIs <- vector("list", length = 20)
+for (i in 1:20)
+{
+    all_CIs[[i]] <- one_CI(25, 3, 1.5)
+}
+
+# Check how many of these 20 intervals contain the true mean
+true_CIs <- rep(0, 20)
+for (i in 1:20)
+{
+    true_CIs[i] <- if (true_mean >= all_CIs[[i]][1] &&
+                       true_mean <= all_CIs[[i]][2]) 1 else 0
+}
+cat("The number of CIs which actually contain the true mean is:", sum(true_CIs))
+```
+
+
+# Question 4
+
+Use \texttt{set.seed(100)} to answer this question.
+
+## Part (a)
+
+Generate a random sample of size 30 from the exponential distribution with parameter $\lambda = 2$ and find the mean of your sample. Repeat this process 1000 times and draw a histogram of these 1000 means (use \texttt{prob=T} in \texttt{hist}). (\textit{Do not} print the 1000 means.)
+
+\textbf{Answer:}
+
+```{r}
+set.seed(100)
+
+sample_size <- 30
+reps <- 1000
+
+# Get 1000 means of a sample of size 30 from an exponential distribution
+sample_means <- rep(0, reps)
+for (i in 1:reps)
+{
+    sample_means[i] <- mean(rexp(sample_size, rate=2))
+}
+
+# Draw a histogram
+hist(sample_means, 
+     probability=TRUE, 
+     col="cornflowerblue", 
+     main="Distribution of means from random sampling of Exp(lambda = 2)",
+     xlab="Sample means",
+     breaks=25)
+
+```
+
+
+## Part (b)
+
+Next we check whether the Central Limit Theorem gives a good approximation for the distribution of the means. Overlay the histogram with a normal density curve with appropriate mean and variance. (You will need to use the mean and variance of exponential distributions from lectures. No need to derive). Comment on the fit.
+
+\textbf{Answer:}
+
+From the lectures, we know that the mean and variance of an exponential distribution with rate parameter $\lambda$ is $1/\lambda$ and $1/\lambda^2$ respectively. Overlaying the above histogram with the curve associated with $N(1/\lambda, 1/\lambda^2) = N(0.5, 0.25)$ we get
+
+```{r}
+# Draw a histogram
+hist(sample_means, 
+     probability=TRUE, 
+     col="cornflowerblue", 
+     main="Distribution of means from random sampling of Exp(lambda = 2)",
+     xlab="Sample means",
+     breaks=25)
+curve(dnorm(x, 0.5, sqrt(0.25/30)), add = TRUE, col = 'red', lwd = 2)
+```
+
+
+Since the sample size here is 30, the distribution of the sample means tends to a normal distribution much more closely than what we saw in Question 1. We can see this from the generally aligned shape between the red normal curve and the blue sample mean distribution. In saying this, the sample mean distribution is still partially right skewed, which is similar to how the exponential distribution behaves. This discrepency would be alleviated by using an even greater sample size.
+
+
+
+
