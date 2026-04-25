@@ -15,4 +15,6 @@ The only issues I had with this unit were the labs and the maze robot competitio
 - For some reason, lab demonstrators were told "not to help students" with their questions regarding the maze robot implementation or simulation. This essentially led to labs having 3 demonstrators out the front of the class doing absolutely nothing. Students who had questions were mostly responded to with "Sorry I can't help you, try Google-ing it" or something of the sort. This got pretty bad towards the end of semester and there were a *lot* of complaints about it on Ed.
 - Because this was the first semester the unit was running after COVID, labs were run with remote and in-person students conjointly. To accommodate for remote students, Professor Boland thought it would be a good idea to get all students to first simulate their maze robot in code before allowing us to build it. This would have been alright had the programming language of choice not been C! For a first year course where students are coming in only having learnt Python, I think it is too big of an ask to make students get up to speed with C for 15% of their grade.
 
-The file I have uploaded here is the Lab Report from Week 3 which was worth 10% of our grade. This received a 10/10.
+I have uploaded the Lab Report from Week 3 which was worth 10% of our grade. This received a 10/10. 
+
+I have also uploaded a few resources/notes from the unit, including a past sample exam.
