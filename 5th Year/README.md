@@ -4,8 +4,6 @@ The following directory contains files related to the following units I complete
 
 <pre>
 5th Year
-└── Semester 1
-    └── <b>DATA3888: Data Science Capstone</b>
 └── Semester 2
     ├── <b>DATA2002: Data Analytics: Learning from Data</b>
     ├── <b>ELEC3609: Internet Software Platforms</b>

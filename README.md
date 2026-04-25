@@ -15,7 +15,7 @@ A subject in **bold** means I have some coursework from that unit uploaded or li
     ├── <b>AERO1560: Introduction to Aerospace Engineering</b>
     ├── ENGG1810: Introduction to Engineering Computing
     ├── <b>MATH1002: Linear Algebra</b>
-    ├── MATH1921: Calculus Of One Variable (Advanced)
+    ├── <b>MATH1921: Calculus Of One Variable (Advanced)</b>
     └── PHYS1903: PHYS1903: Physics 1A (Special Studies Program)
 └── Semester 2
     ├── <b>AMME1362: Materials 1</b>

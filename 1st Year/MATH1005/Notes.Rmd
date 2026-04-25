@@ -1,0 +1,598 @@
+---
+title: "MATH1005 Notes"
+author: "Antriksh Dhand"
+date: "29/11/2021"
+output: 
+        pdf_document:
+                toc: True
+                toc_depth: 3
+                number_sections: True
+---
+
+\newpage
+
+# General R Things
+
+## Reading in data
+
+```{r}
+data <- read.csv("WEEK 2/2020fatalities.csv")
+```
+
+## Outputting dimension of data
+
+```{r}
+dim(data)
+```
+
+## Classification of variables (datatypes)
+
+```{r}
+str(data)
+```
+
+```{r}
+# Changing the datatype of specific variables
+data$Crash.ID <- as.factor(data$Crash.ID)
+
+# note that you cannot use the levels argument here
+# as Month was originally encoded from 1 - 12.
+data$Month <- as.factor(data$Month) 
+data$Dayweek <- factor(data$Dayweek, 
+                       levels = c("Monday", "Tuesday", "Wednesday", 
+                                  "Thursday", "Friday", "Saturday", 
+                                  "Sunday")) 
+# the factor function encodes a vector as a factor (category)
+# with order based on the levels argument
+
+# converting to `logical` data format using the batman package
+library(batman)
+data$Christmas.Period = to_logical(data$Christmas.Period)
+data$Easter.Period = to_logical(data$Easter.Period)
+
+str(data)
+```
+
+## Difference between `$` and `[]` access operators
+
+```{r}
+year <- data$Year
+year1 <- data["Year"]
+head(year)
+head(year1)
+```
+
+Using `$` allows you to access individual entries, whereas `[]` returns a vector/dataframe type object.
+
+\newpage
+
+# Data Summaries
+
+## Qualitative data
+
+Often times when working with qualitative data summaries, we need to first produce a frequency table. This can be done using the `table()` function.
+
+```{r}
+# outputs a frequency table
+table(year)
+
+table(year)[1] # accesses the first element of the frequency table
+```
+
+### Bar plot (frequency of 1 categorical variable)
+
+To produce a simple bar plot which counts the frequency of each category, use the `barplot` function which takes in a frequency table as its input.
+
+```{r}
+barplot(table(year),
+        main = "Number of road fatalities per year",
+        xlab = "Year", 
+        ylab = "Number of fatalities", 
+        ylim = c(0, 3000))
+```
+
+\newpage
+
+```{r}
+dayweek <- data$Dayweek
+barplot(table(dayweek),
+        main = "Number of road fatalities by day of the week",
+        xlab = "Day of the week",
+        ylab = "Number of fatalities",
+        ylim = c(0, 10000))
+```
+
+\newpage
+
+### Double bar plot (frequency of 2 categorical variables) [Stacked or side-by-side]
+
+Similar to a single bar plot, but now we are comparing against 2 categorical variables.
+
+```{r}
+gender <- data$Gender
+data1 <- table(gender, dayweek) # in the order that you want the grouping to follow
+```
+
+```{r}
+# Stacked bar plot
+barplot(data1,
+        main = "Fatalities by day of the week and gender",
+        xlab = "Day of the week",
+        ylab = "Number of fatalities",
+        ylim = c(0, 10000),
+        col = c("red", "lightblue", "lightgreen", "orange"),
+        legend = rownames(data1),
+        beside = FALSE)
+```
+
+\newpage
+
+```{r}
+# Side-by-side bar plot
+barplot(data1,
+        main = "Fatalities by day of the week and gender",
+        xlab = "Day of the week",
+        ylab = "Number of fatalities",
+        ylim = c(0, 7000),
+        col = c("red", "lightblue", "lightgreen", "orange"),
+        legend = rownames(data1),
+        beside = TRUE)
+```
+
+\newpage
+
+```{r}
+# FILTERING OUT -9 AND UNSPECIFIED
+data1_filtered <- data1[-c(1, 4), ] # we don't want rows 1 and 4, but we want all columns
+
+# Side-by-side bar plot but filtered
+barplot(data1_filtered,
+        main = "Fatalities by day of the week and gender",
+        xlab = "Day of the week",
+        ylab = "Number of fatalities",
+        ylim = c(0, 7000),
+        col = c("lightblue", "lightgreen"),
+        legend = rownames(data1_filtered),
+        beside = TRUE)
+```
+
+\newpage
+
+```{r}
+speedlimit <- data$Speed.Limit
+table(speedlimit)
+```
+
+It would make sense to represent speed limit as a categorical variable. We can also introduce a new category of `<40` and merge speeds of 5 up to 30 as they are relatively low frequency.
+
+```{r}
+speedlimit[speedlimit == "5"] = "<40"
+speedlimit[speedlimit == "10"] = "<40"
+speedlimit[speedlimit == "15"] = "<40"
+speedlimit[speedlimit == "20"] = "<40"
+speedlimit[speedlimit == "25"] = "<40"
+speedlimit[speedlimit == "30"] = "<40"
+speedlimit[speedlimit == "-9"] = NA
+
+# converting to a factor
+speedlimit = factor(speedlimit, 
+                    levels = c("<40", "50", "60", "70", "75", "80", "90", 
+                               "100", "110", "130"))
+table(speedlimit)
+```
+
+\newpage
+
+```{r}
+# single bar plot
+barplot(table(speedlimit),
+        main = "Number of fatalities by speed limit",
+        xlab = "Speed limit",
+        ylab = "Number of fatalities",
+        ylim = c(0, 20000))
+```
+
+\newpage
+
+```{r}
+# double bar plot
+data2 = table(gender, speedlimit)
+data2_filtered = data2[-c(1, 4), ]
+barplot(data2_filtered,
+        main = "Number of road fatalities by speed limit and gender",
+        xlab = "Speed limit (km/h)",
+        ylab = "Number of fatalities",
+        col = c("lightblue", "lightgreen"),
+        legend = rownames(data2_filtered),
+        beside = TRUE)
+```
+
+\newpage
+
+## Adjusting axis labels on a chart
+
+There are three new arguments we provide to the charting function here: `las`, `cex.axis`, and `cex.names`.
+
+### `las`
+
+- `las = 0` : both labels are parallel to their axes
+- `las = 1` : y-labels are perpendicular, x-labels are parallel
+- `las = 2` : both labels are perpendicular to their axes
+- `las = 3` : y-labels are parallel, x-labels are perpendicular
+
+### `cex`
+
+`cex` is a function which controls the scaling of text in a graph. 
+
+- `cex.axis` controls the y-axis scaling
+- `cex.names` controls the x-axis scaling
+- `cex.main` controls the title scaling
+
+```{r}
+# Side-by-side bar plot but prettier
+barplot(data1_filtered,
+        main = "Fatalities by day of the week and gender",
+        xlab = "Day of the week",
+        ylab = "Number of fatalities", ylim = c(0, 7000),
+        col = c("lightblue", "lightgreen"),
+        legend = rownames(data1_filtered),
+        beside = TRUE,
+        las = 1,
+        cex.axis = 0.80, cex.names = 0.80, cex.main = 1.5)
+```
+
+```{r}
+qnorm(.9)
+```
+
+
+\newpage
+
+### Adding lines and points to a graph
+
+We can use the `abline` function to plot lines onto our charts. The line type (`lty`) can be `0` (blank), `1` (solid), `2` (dashed), `3` (dotted) and so on. Some use cases are:
+
+- `abline(a = 1, b = 2, col = 'blue', lty = 2)` : plots a blue dashed line with $\text{intercept} = 1$ and $\text{slope} = 2$ 
+- `abline(h = 4, col = 'green', lty = 1)` : plots a horizontal green solid line at $y = 4$
+- `abline(v = mean(1, 2, 3, 4, 5))` : plots a vertical black solid line at $x = 3$
+
+You can also use `lwd` (line width) to control the thickness of the lines.
+
+```{r}
+data_houses <- read.csv("WEEK 3/NewtownJune2017.csv")
+hist(data_houses$Sold, 
+     main = "Newtown properties", 
+     xlab = "Price (in 1000s)")
+abline(v = mean(data_houses$Sold), col = "red")
+abline(v = median(data_houses$Sold), col = "purple", lty = 2, lwd = 3)
+```
+
+\newpage
+
+## Quantitative data
+
+### Histogram (frequency of 1 quantitative variable)
+
+```{r}
+data$Age[data$Age == -9] <- NA # cleaning
+
+age <- data$Age
+hist(age)
+```
+
+Note that this histogram is produced on the frequency scale. We prefer to use the density scale.
+
+\newpage
+
+```{r}
+# choosing specific class intervals
+par(mfrow = c(1, 2))
+hist(age,
+     br = c(0, 18, 25, 70, 101), # custom class intervals
+     freq = FALSE, # produces the histogram on the density scale
+     right = F, # makes the intervals right-open
+     xlab = "Age (in years)",
+     ylab = "Density")
+
+hist(age,
+     br = 10,
+     freq = FALSE, # produces the histogram on the density scale
+     right = F, # makes the intervals right-open
+     xlab = "Age (in years)",
+     ylab = "Density")
+```
+
+\newpage
+
+### Multiple histograms (frequency of 1 quantitative variable split by a categorical variable)
+
+```{r}
+ageF <- data$Age[data$Gender == "Female"] # selecting just the female ages
+ageM <- data$Age[data$Gender == "Male"]
+
+par(mfrow = c(1, 2)) # outputting in 1 row and 2 columns
+hist(ageF, freq = F)
+hist(ageM, freq = F)
+```
+
+\newpage
+
+### Single boxplot (numerical summary of a quantitivate variable)
+
+```{r}
+summary(age)
+boxplot(age,
+        main = "Boxplot of ages involved in fatalities",
+        horizontal = TRUE)
+```
+
+\newpage
+
+### Multiple boxplots (numerical summary of a quantitivate variable split up by a qualitative variable)
+
+A comparative boxplot splits up a quantitative variable by a qualitative variable.
+
+```{r}
+summary(age[gender == "Female"])
+summary(age[gender == "Male"])
+```
+
+```{r}
+gender <- factor(gender, levels = c("Female", "Male"))
+boxplot(age ~ gender, horizontal = TRUE) # plot gender split by age
+```
+
+\newpage
+
+### Scatter plots (compare two quantitative variables)
+
+```{r}
+# plot()
+```
+
+### Heatmaps
+
+A heatmap is especially useful when a contingency table is not practical due to too many different values. We can also scale (centered and scaled in a specific direction), the heatmap by column — results in something like an Age histogram for every year.
+
+```{r}
+par(mfrow = c(1, 2))
+heatmap(table(age, year), 
+        Rowv = NA, 
+        Colv = NA, 
+        scale = "none", 
+        main = "Heatmap of frequencies")
+
+# scaled by column
+heatmap(table(age, year), 
+        Rowv = NA, 
+        Colv = NA, 
+        scale = "col", 
+        main = "Heatmap scaled by column")
+
+```
+
+\newpage
+
+# Numerical summaries: Centre
+
+## Sample mean
+
+- The average of the data
+- Involves all the data
+- Serves as a balancing point
+
+$$\bar{x} = \frac{\sum_{i=1}^n x_i}{n}$$
+
+In R we just use the `mean()` function.
+
+```{r}
+mean(data_houses$Sold)
+```
+
+## Sample median
+
+The middle data point when the observations are ordered from smallest to largest.
+
+For odd $n$:
+$$\tilde{x} = x_{(\frac{n+1}{2})}$$
+
+For even $n$:
+$$\tilde{x} = \frac{x_{\left( \frac{n}{2} \right)} + x_{\left( \frac{n}{2} + 1 \right)}}{2}$$
+
+In R we use the `median()` function.
+
+```{r}
+median(data_houses$Sold)
+```
+
+
+```{r}
+hist(data_houses$Sold)
+abline(v = mean(data_houses$Sold), col = "green", lwd = 2)
+abline(v = median(data_houses$Sold), col = "purple", lwd = 2)
+```
+
+The sample median is said to be robust and is a good summary for skewed data as it is not affected by outliers.
+
+# Numerical summaries: Spread
+
+## Sample SD
+$$\text{SD}_\text{sample} = \sqrt{\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}}$$
+
+In R, the `sd` function **always calculates the sample standard deviation.**
+
+You can convert from sample SD to population SD by a conversion factor:
+$$\text{SD}_\text{pop} = \text{SD}_\text{sample} \, \times \sqrt{\frac{n-1}{n}}$$
+
+## Population SD
+$$\text{SD}_\text{pop} = \sqrt{\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n}}$$
+In R, calculating the population SD requires the `multicon` package.
+
+```{r}
+library(multicon)
+popsd(data_houses$Sold)
+```
+
+
+## Z-Score
+Measures how many SD's a point is above or below the mean.
+
+$$z = \frac{x - \bar{x}}{\text{SD}}$$
+
+## IQR
+Range of the middle 50% of the data.
+$$\text{IQR} = Q_3 - Q_1$$
+
+## Lower and upper thresholds
+$$\text{LT} = Q_1 - 1.5 \cdot \text{IQR}$$
+$$\text{UT} = Q_3 + 1.5 \cdot \text{IQR}$$
+
+## Coefficient of variation
+$$\text{CV} = \frac{\text{SD}}{\bar{x}}$$
+
+
+# General Normal Curve
+
+Suppose the heights of Australian women follow a normal distribution with mean 161.8cm and SD 7.7cm. What proportion of women will have height less than 170cm?
+
+We can use the `pnorm(x, mean, SD, lower.tail = TRUE/FALSE)` function to evaluate this.
+
+```{r}
+pnorm(170, 161.8, 7.7, lower.tail = TRUE) 
+```
+
+# Scatter plots and correlation
+
+A scatter plot can be summarised by 5 numerical summaries:
+
+- sample mean and sample SD of X $(\bar{x}, \text{SD}_x)$
+- sample mean and sample SD of Y $(\bar{y}, \text{SD}_y)$
+- correlation coefficient ($r$)
+
+## Correlation coefficient
+
+Measures the clustering of the data around a line. It is the mean of the product of the variables in standard units.
+
+$$r = \frac{1}{n} \sum_{i=1}^n \frac{x_i - \bar{x}}{\text{SD}_x} \frac{y_i - \bar{y}}{\text{SD}_y}$$
+
+```{r}
+data_class <- read.csv("WEEK 5/LAB/math1005.csv")
+```
+
+```{r}
+# data cleaning (removing na values)
+height <- na.omit(data_class$Height)[1:358]
+shoesize <- na.omit(data_class$ShoeSize)[1:358]
+```
+
+```{r}
+plot(height, shoesize)
+```
+```{r}
+# further data cleaning 
+# (removing any entries where the shoe size is greater than 20)
+height <- height[shoesize <= 20]
+shoesize <- shoesize[shoesize <= 20] 
+```
+
+```{r}
+plot(height, shoesize,
+     main = "Scatter plot of shoe sizes versus height",
+     xlab = "Height (cm)",
+     ylab = "Shoe size")
+```
+
+```{r}
+library(multicon)
+SU_x = (height - mean(height))/popsd(height) # converting to standard units
+SU_y = (shoesize - mean(shoesize))/popsd(shoesize)
+mean(SU_x * SU_y) # mean of the product of the variables in standard units
+```
+
+In R, we can use the `cor(x, y)` function to calculate the correlation coefficient.
+```{r}
+cor(SU_x, SU_y)
+```
+
+
+## Regression lines
+
+### SD line (bad descriptor)
+
+The SD line connects the points of averages $(\bar{x}, \bar{y})$ to $(\bar{x} + \text{SD}_x,\, \bar{y} + \text{SD}_y)$. As it does not use the correlation coefficient, it is insensitive to the amount of clustering around the line. It generally under- and over-estimates at the extremes.
+
+### The regression line
+
+To completely describe the scatter plot, we need to use all 5 numerical summaries: $\bar{x}$, $\bar{y}$, $\text{SD}_x$, $\text{SD}_y$ and $r$.
+
+The **regression line** connects $(\bar{x}, \bar{y})$ to $(\bar{x} + \text{SD}_x,\, \bar{y} + r\text{SD}_y)$. The $r$ term in the second point's $y$-coordinate controls the steepness and the sign of the gradient. It improves the fit of the line at the extremes. Hence, the slope of the regression line is
+$$m = \frac{(\bar{y} + r\text{SD}_y) - \bar{y}}{(\bar{x} + \text{SD}_x) - \bar{x}} = r \cdot \frac{\text{SD}_y}{\text{SD}_x}$$
+The y-intercept of the regression line is
+$$b = \bar{y} - m\bar{x}$$
+In R, we use the `lm(y ~ x)` function (linear model) to find the regression line. The input is `y ~ x` as in "$y$ variable regressed onto $x$ variable".
+
+```{r}
+linear_model <- lm(shoesize ~ height)
+print(linear_model)
+```
+
+The `lm` function has many callable parameters such as `$coefficients` which returns a named vector of coefficients where `[1]` is the intercept and `[2]` is the slope.
+
+```{r}
+linear_model$coefficients
+```
+
+So the regression line for this linear model is $y = 1.33 + 0.0445x$. To plot this regression line onto the scatter plot we can use `abline()`.
+
+```{r}
+plot(height, shoesize,
+     main = "Scatter plot of shoe sizes versus height",
+     xlab = "Height (cm)",
+     ylab = "Shoe size")
+abline(lm(shoesize ~ height), col = "red")
+```
+
+The best method for making predictions is the regression line as it includes all the data. You can use the regression line to predict $y$ from $x$ or $x$ from $y$ but you **must refit the data**: you cannot simply rearrange the formula.
+
+## Residuals
+
+A residual is the vertical distance of a point above or below the regression line. It represents the error between the actual value and the prediction.
+$$e_i = y_i - \hat{y}_i$$
+where $y_i$ is the actual value and $\hat{y}_i$ is the prediction.
+
+### Residual plot
+
+- A residual plot graphs the residuals vs $x$.
+- The residual plot is a diagnostic plot to check the appropriateness of a linear model.
+- If the linear fit is appropriate for the data, it should show no pattern (random about $y = 0$).
+
+In R, the residuals are built into the linear model.
+
+```{r}
+plot(height, linear_model$residuals, ylab = "Residuals", xlab = "Height")
+abline(h = 0)
+```
+
+- If there is the same (equal) variance around the y axis, the data displays *homoscedasticity* and the data is appropriate to be fit using a linear model. The regression line can be used for predictions. 
+- If not, the data displays *heteroscedasticity* and the data should not be fit using a linear model.
+
+# Chance
+
+## Simulating chance
+
+Write a simulation for a game where you a toss a die 4 times and you win if you get at least one 1.
+
+```{r}
+gameA <- function() {
+        rolls <- sample(1:6, size = 4, replace = TRUE)
+        condition <- sum(rolls == 1) > 0
+        return(condition)
+}
+
+simsA <- replicate(1e+05, gameA()) # results in a table of T/F values if won/lost
+probability <- sum(simsA)/length(simsA) # calculates the probability of winning
+probability
+```
+
+
+

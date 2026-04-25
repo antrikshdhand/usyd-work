@@ -1,0 +1,274 @@
+---
+title: "The impact of external factors on a student's performance"
+author: '510415022, 500456970, 510512974'
+date: "University of Sydney | MATH1005 | Thursday, Lab Class 10 @ 11am | Carslaw Building 353"
+output:
+  html_document:
+    fig_caption: yes
+    number_sections: yes
+    self_contained: yes
+    theme: flatly
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    code_folding: hide
+subtitle: An analysis of UCI's _Student Performance_ dataset
+bibliography: references.bib
+nocite: '@*'
+---
+
+<style>
+body {
+text-align: justify}
+</style>
+
+<br>
+
+# Executive Summary
+
+The aim of the report is to investigate the performance of students attending two public schools in Portugal. Specific areas of interest include the effect of weekday alcohol consumption on student performance, as well as the performance of students studying Portuguese over two semesters.
+
+The analysis showed that there was no discernible relationship between grades and alcohol consumption, a common finding in previous studies of these two variables. However, there was a perceivable change in the distribution of grades, becoming increasingly negative with increased alcohol intake.
+
+Additionally, students studying Portuguese across both schools experienced on average a decrease in performance with a larger proportion of GP students experiencing this decrease. This aligned with studies identifying the low graduation rate and generally poorer education climate in Portugal.
+
+<br>
+
+# Full Report
+
+## Initial Data Analysis (IDA)
+
+### Source
+
+The data is originally sourced from the study _Using data mining to predict secondary school student performance_ [@Reference1]. This study primarily focuses on predicting a student's final grade of the year given their past examination results, and then examining which variables affect student success in school to a higher degree.
+
+In order to conduct the study, researchers collected first-hand data about 788 students studying Mathematics and Portuguese in two public schools using school reports and a questionnaire. The questionnaire was designed as to limit variability in the responses, and hence most questions have predetermined responses, with questions focusing on "demographic (e.g. mother’s education, family income), social/emotional (e.g. alcohol consumption)...and school related (e.g. number of past class failures) variables" [@Reference1]. The data has therefore been collected by a reputable source and is largely valid.
+
+The largest issue with the method used by these researchers to collect their data is using an arbitrary 1 - 5 scale for a large proportion of predetermined responses. For example, `famrel`, `freetime`, `goout`, `Dalc` (workday alcohol consumption), `Walc` (weekend alcohol consumption), and `health` are all variables which require the respondents to judge their own social and emotional habits from 1 to 5, with absolutely no quantitative scale for what each number might represent. Compare this to the `traveltime` and `studytime` variables which have been given definite numerical 'bins' per response e.g. for `studytime` we have a scale of 1 to 4 with the following guidelines:
+
+- 1: <2 hours
+- 2: 2 to 5 hours
+- 3: 5 to 10 hours
+- or 4: >10 hours
+
+Potential stakeholders for a study on the factors affecting a student's performance are educators all around the world including teachers and principals but also policy-makers and legislators.
+
+### Variables
+
+There are initially two datasets provided: one for Mathematics students (`d1`) and one for Portuguese students (`d2`).
+
+```{r}
+# students studying Mathematics
+d1 = read.csv("student/student-mat.csv", sep = ";", header = TRUE)
+
+# students studying Portuguese
+d2 = read.csv("student/student-por.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+# observe dimensions of each dataset
+dim(d1)
+dim(d2)
+```
+
+```{r}
+# we view the variable names that are contained in the dataset using the `names` function 
+variables = names(d1)
+variables
+```
+
+Both datasets contain 33 columns, each representing a different variable of a student's life. Each row represents one student's information, hence the Mathematics dataset has 395 students and the Portuguese dataset has 649 students. 
+
+<br>
+
+#### Classification of variables
+
+Checking whether `R` has correctly identified the datatype of each variable;
+
+```{r}
+str(d1)
+```
+
+It appears as though there are many variables which _should_ be classified as a `logical` but currently are represented `chr` datatype (`schoolsup` to `romantic`). The `to_logical` function from the `batman` package can automatically convert these to their correct datatype:
+
+```{r}
+# load in the batman library
+library(batman)
+
+# assigning each variable to the restructured version [d1]
+d1$schoolsup = to_logical(d1$schoolsup)
+d1$famsup = to_logical(d1$famsup)
+d1$paid = to_logical(d1$paid)
+d1$activities = to_logical(d1$activities)
+d1$nursery = to_logical(d1$nursery)
+d1$higher = to_logical(d1$higher)
+d1$internet = to_logical(d1$internet)
+d1$romantic = to_logical(d1$romantic)
+
+# assigning each variable to the restructured version [d2]
+d2$schoolsup = to_logical(d2$schoolsup)
+d2$famsup = to_logical(d2$famsup)
+d2$paid = to_logical(d2$paid)
+d2$activities = to_logical(d2$activities)
+d2$nursery = to_logical(d2$nursery)
+d2$higher = to_logical(d2$higher)
+d2$internet = to_logical(d2$internet)
+d2$romantic = to_logical(d2$romantic)
+```
+
+```{r}
+# now the structure of both datasets is accurately represented in R.
+
+str(d1)
+```
+
+```{r}
+# now the structure of both datasets is accurately represented in R.
+str(d2)
+```
+
+<br>
+
+In IQ1 we are interested in analysing data from students who have done both Mathematics and Portuguese, and so we must merge these two datasets to find the unique entries. 
+
+```{r}
+data = merge(d1, d2, by = c("school", "sex", "age", "address", "famsize", "Pstatus", "Medu", "Fedu", "Mjob", "Fjob", "reason", "nursery", "internet", "Dalc"))
+
+# print dimensions of merged dataset
+dim(data)
+```
+
+**After merging the two data sets together, there remains 382 unique entries corresponding to Portuguese and mathematics students.**
+
+<br>
+
+#### Description of key variables
+
+The key numeric variables here are `G1`, `G2` and `G3`, which represent the student's mark in the three schooling terms of the Portuguese calendar from 0 to 20. `dalc` represents the weekday alcohol consumption of a given student given as a double on an increasing continuous numeric scale from 1 to 5.
+
+<br>
+
+## Research Question 1: What is the impact of alcohol consumption on student performance?
+
+Here we compare the final average grades (`G3`) of students who studied both Mathematics and Portuguese to their weekday alcohol consumption (`Dalc`). 
+
+### Comparing grades with weekday alcohol consumption
+We averaged the Mathematics and Portuguese grades, `d3$G3.x`, `d3$G3.y` and separated the data based on the `Dalc` nominal scale, storing them into five variables. We produce 5 boxplots with the mean notated on each.
+
+```{r}
+# Weekday Alcohol Consumption vs. Grades
+
+# average of Mathematics (.x) and Portuguese (.y) grades of students who chose a 1, 2, 3, 4 or 5 for weekday alcohol consumption, respectively
+verylow = ((data$G3.x + data$G3.y)/2)[data$Dalc == 1] 
+low = ((data$G3.x + data$G3.y)/2)[data$Dalc == 2]
+medium = ((data$G3.x + data$G3.y)/2)[data$Dalc == 3]
+high = ((data$G3.x + data$G3.y)/2)[data$Dalc == 4]
+veryhigh = ((data$G3.x + data$G3.y)/2)[data$Dalc == 5]
+
+# producing 5 boxplots with relevant title and axis labels
+boxplot(verylow, low, medium, high, veryhigh, 
+        horizontal = T, 
+        xlab = "Grade", 
+        ylab = "Weekday alcohol consumption", 
+        main = "Grades vs. Weekday Alcohol Consumption", 
+        col = c("#628395", "#96897b", "#dfd5a5", "#dbad6a", "#cf995f"),
+        xmax = 20,
+        notch = FALSE)
+
+y = c(1, 2, 3, 4, 5) # storing variable to set ticks for y axis
+y_label = c("1", "2", "3", "4", "5") # storing variable to label ticks y axis
+
+axis(side = 2, 
+     at = y, 
+     labels = y_label,
+     tck = -.05) # setting and labelling ticks on y axis
+
+# plotting means onto each boxplot
+points(mean(verylow), 1, col = 6, pch = 17)
+points(mean(low), 2, col = 6, pch = 17)
+points(mean(medium), 3, col = 6, pch = 17)
+points(mean(high), 4, col = 6, pch = 17)
+points(mean(veryhigh), 5, col = 6, pch = 17)
+
+
+# Finding the number of students in each category:
+length(verylow)
+length(low)
+length(medium)
+length(high)
+length(veryhigh)
+```
+
+The median grade remains relatively constant between the categories of alcohol consumption. With higher alcohol consumption the grades become more negatively skewed with a lower mean than median. This indicates that with increased weekday alcohol intake, the results became more variable and there were more students who performed worse than what would be expected, reducing the overall mean. 
+
+Furthermore, the spread of data decreased with increased alcohol consumption with the maximum score decreasing and minimum scores increasing. This is with the exception of the "high" and "very high" categories, likely due to the low number of students in these categories ("high" and "very high" had 8 and 9 students compared to 265, 71 and 24 students in the "very low", "low" and "medium" categories respectively). This likely skewed the sample.
+
+### Limitations
+
+Apart from the imbalance of students in each category, another limitation of this dataset is that the study does not mention what question was asked to participants when choosing from this scale. It is unclear whether the question was subjective (i.e. how much do you think you drink each week?) or more objective (i.e. do you drink 5 drinks per week, 10 drinks etc.? with a scale based on the number of drinks per week). If it was subjective, many students may have exaggerated their weekday alcohol consumption, resulting in a skewed sample. This may explain why those with very high alcohol consumption achieved better-than-expected grades. 
+
+### Concluding remarks and additional research
+
+Overall, the relationship between grades and weekday alcohol consumption in this dataset was nonexistent. Whilst the potential physical and psychological effects of alcohol consumption are well-documented, with Portugal having the "highest alcohol consumption and linked alcohol problems" in the European Union [@alcohol_north_east_portugal], the direct relationship between alcohol intake and grades has not been established [@alcohol_in_high_school]. Some state that "teen drinking does not have an independent effect on educational attainment" [@teen_drinking] whilst others are of the opinion that there may be too many confounders in the heterogeneity of participants [@alcohol_in_high_school]. However, the limitations of these studies is that they were all published over 10 years ago and so may not accurately represent teenagers in today's society and, were focused on other variables such as gender and legislation in relation to drinking thus, altering the sample to also accommodate for these. 
+
+<br>
+
+## Research Question 2: Comparing Portuguese marks across semesters (`G1` vs `G2`) and across schools (`GP` vs `MS`)
+
+We investigate the growth in Portuguese performance across two schools in order to identify a correlation between school and Portuguese performance. The results are derived from two different public schools where there may exist a difference in curriculum, quality of teaching, or general well-being. While Portugal has 'improved dramatically' in its social and economic sectors, it has 'not yet reached the standards of living' [@portugalstandards] of other EU counterparts. In 2002, only about 45% students graduated from secondary school compared to a mean of more than 80% for OECD countries [@portugalstandards]. 
+
+```{r}
+# we separate the variables `G1.y`, `G2.y` by school
+
+G1.y.GP = d2$G1[d2$school == 'GP'] # GP Portuguese student marks in G1
+G1.y.MS = d2$G1[d2$school == 'MS'] # MS Portuguese student marks in G1
+
+G2.y.GP = d2$G2[d2$school == 'GP'] # GP Portuguese student marks in G2
+G2.y.MS = d2$G2[d2$school == 'MS'] # MS Portuguese student marks in G2
+
+```
+### Portuguese linear regression
+
+We represent Portuguese performance in the form of a scatter plot which presents. A linear model is shown in red and a standard $y=x$ line is shown in blue to be used as comparison. The $y=x$ line indicates a net zero change in scores across both semesters and can be compared to the regression line to identify a general increase or decrease in performance across G1 and G2.
+
+```{r}
+# Linear Regression
+par(mfrow=c(1,2))
+
+y.model.GP = lm(G2.y.GP ~ G1.y.GP) # Linear model for GP Portuguese
+y.model.MS = lm(G2.y.MS ~ G1.y.MS) # Linear model for MS Portuguese
+
+plot(G1.y.GP, G2.y.GP, xlab = 'GP Portuguese scores in G1', ylab = 'GP Portuguese scores in G2', ylim = c(0,20), xlim = c(0,20))
+abline(y.model.GP, col = 'red')
+abline(a=0, b=1, col = 'Blue', lty = 2) # y = x comparison line
+
+plot(G1.y.MS, G2.y.MS, xlab = 'MS Portuguese scores in G1', ylab = 'MS Portuguese scores in G2', ylim = c(0,20), xlim = c(0,20))
+abline(y.model.MS, col = 'red')
+abline(a=0, b=1, col = 'Blue', lty = 2) # y = x comparison line
+
+# Residuals
+plot(G1.y.GP, y.model.GP$residuals, ylim = c(-20,20), xlim = c(0,20), xlab = 'GP Portuguese scores in G1', ylab = 'Score displacement from mean')
+abline(h=0, col = 'red')
+
+plot(G1.y.MS, y.model.MS$residuals, ylim = c(-20,20), xlim = c(0,20), xlab = 'MS Portuguese scores in G1', ylab = 'Score displacement from mean')
+abline(h=0, col = 'red')
+
+# Correlation coefficients
+cor(G1.y.GP, G2.y.GP) # GP Correlation Coeff. (0.8637152)
+cor(G1.y.MS, G2.y.MS) # MS Correlation Coeff. (0.8453461)
+```
+
+We observe relatively high correlation coefficients (0.86, 0.84) which indicate a strong positive relation. Both regression lines (red) have lower gradient compared to the standard $y=x$ line (blue), indicating on average a decrease in marks in G2 across both schools. Also notice the intersection of the two lines on both graphs; GP scores 'broke even' at a lower score compared to MS which showed a regression line almost identical to the $y=x$ line. This indicates that the proportion of MS students that performed better in G2 is higher than that of GP students. In terms of the quality of the analysis, plots of the residuals reflect a minimised variance in GP scores, but some variance in MS scores.
+
+There are of course several limitations with the above model which cause great difficulty in comparing the actual growth between two schools. There exists a large disparity in observations for both schools:
+
+```{r}
+length(G1.y.GP)
+length(G1.y.MS)
+
+# Number of observations for GP (342) and MS (40)
+```
+
+Additionally, there is limited information regarding the process by which these scores were recorded; it is unknown if the scores were marked against the same criteria and unlikely that the assessments by which these scores were derived were similar across the two schools. Any weighting systems and/or formative tasks may have also contributed to the final grade. So, while the results may suggest that MS experienced greater increases in performance, without fully accounting for these confounders it is difficult to decide with certainty the school with greater growth in Portuguese performance. Additionally, this analysis only accounts for Portuguese scores and cannot be used to reflect the overall academic performance of each school. 
+
+# References
