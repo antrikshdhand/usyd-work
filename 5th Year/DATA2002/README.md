@@ -1,4 +1,4 @@
-# DATA2002: Data Analytics: Learning from Data</b>
+# DATA2002: Data Analytics: Learning from Data
 
 *Taken in 2025 Semester 2*
 

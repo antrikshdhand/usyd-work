@@ -74,3 +74,36 @@ A subject in **bold** means I have some coursework from that unit uploaded or li
     └── <b>SOFT3888: Software Development Project</b>
 
 </pre>
+
+## A list of all project repositories
+
+Below is an "at-a-glance" list of external repositories and projects I contributed to during university.
+
+### 2nd Year
+
+- Citadel C1 APAC Datathon: https://github.com/antrikshdhand/Citadel-C1-APAC-Datathon
+- SyncsHack 2022: https://github.com/antrikshdhand/syncshack2022
+- SOFT2412 Project 1, Currency Converter: https://github.com/antrikshdhand/soft2412-currency-converter
+- SOFT2412 Project 2, Vending Machine: https://github.com/antrikshdhand/soft2412-vending-machine
+
+### 3rd Year
+
+- MATH1115 Project 1: https://github.com/antrikshdhand/math1115-project-1
+- ISYS2110, Dog's Haven: https://github.com/antrikshdhand/isys2110-dogshaven
+- CS2113 Chatbot (NUS exchange): https://github.com/antrikshdhand/cs2113-chatbot
+- CS2113 Chessmaster (NUS exchange): https://github.com/antrikshdhand/cs2113-chessmaster
+- Summer Vacation Research Internship: https://github.com/antrikshdhand/summer-research
+- gfuzztools: https://github.com/antrikshdhand/gfuzztools
+
+### 4th Year
+
+- SCDL3991 Research: https://github.com/antrikshdhand/SCDL3991-research
+- ELEC4714 Thesis / ESIPS project: https://github.com/antrikshdhand/thesis
+
+### 5th Year
+
+- COMP4347 Assignment 2: https://github.com/antrikshdhand/comp4347-a2
+- DATA2002 Group Assignment: https://github.com/antrikshdhand/data2002-L10G05
+- ELEC3609 Final Group Project, Unhinged: https://github.com/antrikshdhand/elec3609-unhinged
+- ELEC5619 Final Project: https://github.com/antrikshdhand/elec5619-project
+- SOFT3888 Capstone Project: https://github.com/antrikshdhand/soft3888-capstone

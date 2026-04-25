@@ -1,4 +1,4 @@
-# ELEC4717: Major Industrial Project [ESIPS]
+# ELEC4714: Major Industrial Project [ESIPS]
 
 *Taken in 2024 Semester 2*
 
