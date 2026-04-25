@@ -12,5 +12,5 @@ I scored 12.3/15 due to choosing an incorrect test for RQ 2 (otherwise I would h
 
 [Our group repository](https://github.com/antrikshdhand/data2002-L10G05) contains all code used to train forward and backwards selection models, as well as our final presentation and report.
 
-Presentation: 7.6/10
-Report: 9.4/10
+- Presentation: 7.6/10
+- Report: 9.4/10

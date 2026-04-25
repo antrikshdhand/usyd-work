@@ -64,7 +64,7 @@ A subject in **bold** means I have some coursework from that unit uploaded or li
 
 5th Year
 └── Semester 1
-    ├── COMP4347: Web Application Development
+    ├── <b>COMP4347: Web Application Development</b>
     └── DATA3888: Data Science Capstone
 └── Semester 2
     ├── <b>DATA2002: Data Analytics: Learning from Data</b>
