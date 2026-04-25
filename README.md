@@ -1,6 +1,6 @@
 # USYD Coursework
 
-The following repository holds any projects or assignments from my coursework at USYD which I think are worthy of sharing with future students. 
+The following repository holds any projects, assignments, or past papers from my coursework at USYD which I think may be helpful for future students. 
 
 Degree: Bachelor of Software Engineering/Bachelor of Science (Data Science)
 
@@ -65,7 +65,7 @@ A subject in **bold** means I have some coursework from that unit uploaded or li
 5th Year
 └── Semester 1
     ├── COMP4347: Web Application Development
-    └── <b>DATA3888: Data Science Capstone</b>
+    └── DATA3888: Data Science Capstone
 └── Semester 2
     ├── <b>DATA2002: Data Analytics: Learning from Data</b>
     ├── <b>ELEC3609: Internet Software Platforms</b>
