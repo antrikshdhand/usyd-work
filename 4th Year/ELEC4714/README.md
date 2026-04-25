@@ -1,3 +1,5 @@
 # ELEC4717: Major Industrial Project [ESIPS]
 
-To view all my thesis work, including code, final presentation, and final dissertation, visit my [thesis repository.](https://github.com/antrikshdhand/thesis).
+*Taken in 2024 Semester 2*
+
+To view all my thesis work, including code, my final presentation, and my final dissertation, visit [my thesis repository.](https://github.com/antrikshdhand/thesis).

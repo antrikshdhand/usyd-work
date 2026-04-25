@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+   <meta charset="utf-8">
+   <link rel="shortcut icon" href="#">
+
+   <title>B2YBooks</title>
+
+   <link rel="stylesheet" href="index.css" />
+   <script type="text/javascript" src="index.js"></script>
+</head>
+<body>
+   <div id="header">
+      <h1>B2YBooks</h1>
+      <div class="left-controls">
+         <div class="search-div">
+            <input type="search" id="searchInput" />
+            <button id="searchButton" type="button">Search</button>
+         </div>
+         
+         <div class="filter-div">
+            <select name="category" id="filterCategory"></select>
+            <button id="filterButton" type="button">Filter</button>
+            <button id="resetAllButton" type="button">Reset filters</button>
+         </div>
+
+
+         <div class="dark-mode-div">
+            <img class="icon" src="images/dark_mode.png" />
+            <button id="darkModeButton" type="button">Dark mode</button>
+         </div>
+      </div>
+   
+      <div class="right-controls">
+         <button id="addToCartButton" type="button">Add to cart</button>
+         <button id="resetCartButton" type="button">Reset the cart</button>
+         <img class="icon" src="images/shopping_cart.png" />
+         <span id="cartTotal">0</span>
+      </div>
+   </div>
+   <div id="listBox">
+      <table id="bookTable">
+         <thead>
+            <tr>
+               <th></th> <!-- Checkbox -->
+               <th></th> <!-- Image -->
+               <th class="title-column">Title</th>
+               <th>Rating</th>
+               <th>Authors</th>
+               <th>Year</th>
+               <th>Price</th>
+               <th>Publisher</th>
+               <th>Category</th>
+            </tr>
+         </thead>
+         <tbody>
+
+         </tbody>
+      </table>
+   </div>   
+</body>
+</html>
