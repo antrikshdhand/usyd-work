@@ -4,6 +4,8 @@ The following directory contains files related to the following units I complete
 
 <pre>
 5th Year
+└── Semester 1
+    └── <b>COMP4347: Web Application Development</b>
 └── Semester 2
     ├── <b>DATA2002: Data Analytics: Learning from Data</b>
     ├── <b>ELEC3609: Internet Software Platforms</b>
